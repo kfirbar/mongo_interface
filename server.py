@@ -46,7 +46,7 @@ def main():
     api.add_resource(Find, '/find/<string:collection>')
 
     # [TODO] Disable debug when in production
-    app.run(host='0.0.0.0', port=args.server_port, debug=True)
+    app.run(host='0.0.0.0', port=args.server_port, debug=True, ssl_context='adhoc')
 
 
 if __name__ == "__main__":
