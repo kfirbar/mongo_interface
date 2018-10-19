@@ -13,8 +13,12 @@ class Find(Resource):
         args = current_app.config['args']
         db = mongo_client[args.mongodb_db]
         query = request.form.get('query', default="", type=str)
-        query = json.loads(query)
-        results = db[collection].find(query)
+        token = request.form.get('token', default="", type=str)
+        if token != args.token:
+            results = ["The token you provided doesn't match our records."]
+        else:
+            query = json.loads(query)
+            results = db[collection].find(query)
         return dumps(results)
 
 
@@ -37,6 +41,7 @@ def main():
     parser.add_argument("--mongodb_password", help="the mongo db password", default="")
     parser.add_argument("--mongodb_db", help="the mongo db database", default="")
     parser.add_argument("--server_port", help="the mongo db port", type=int, default=9000)
+    parser.add_argument("--token", help="the server token", type=str, default="kjh92837dshjdhfn8nx")
 
     args = parser.parse_args()
 
