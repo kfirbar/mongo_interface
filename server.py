@@ -14,11 +14,15 @@ class Find(Resource):
         db = mongo_client[args.mongodb_db]
         query = request.form.get('query', default="", type=str)
         token = request.form.get('token', default="", type=str)
+        limit = request.form.get('limit', default=-1, type=int)
         if token != args.token:
             results = ["The token you provided doesn't match our records."]
         else:
             query = json.loads(query)
-            results = db[collection].find(query).limit(2)
+            if limit == -1:
+                results = db[collection].find(query)
+            else:
+                results = db[collection].find(query).limit(limit)
         return dumps(results)
 
 
