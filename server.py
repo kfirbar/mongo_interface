@@ -18,7 +18,7 @@ class Find(Resource):
             results = ["The token you provided doesn't match our records."]
         else:
             query = json.loads(query)
-            results = db[collection].find(query)
+            results = db[collection].find(query).limit(2)
         return dumps(results)
 
 
