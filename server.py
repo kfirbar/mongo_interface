@@ -22,6 +22,21 @@ class Find(Resource):
         return dumps(results)
 
 
+class Aggregate(Resource):
+    def get(self, collection):
+        mongo_client = current_app.config['mongo_client']
+        args = current_app.config['args']
+        db = mongo_client[args.mongodb_db]
+        query = request.form.get('query', default="", type=str)
+        token = request.form.get('token', default="", type=str)
+        if token != args.token:
+            results = ["The token you provided doesn't match our records."]
+        else:
+            query = json.loads(query)
+            results = db[collection].aggregate(query)
+        return dumps(results)
+
+
 def create_app(args, debug=False):
     app = Flask(__name__)
     app.debug = debug
@@ -49,6 +64,7 @@ def main():
     api = Api(app)
     # Routing
     api.add_resource(Find, '/find/<string:collection>')
+    api.add_resource(Aggregate, '/aggregate/<string:collection>')
 
     # [TODO] Disable debug when in production
     app.run(host='0.0.0.0', port=args.server_port, debug=True, ssl_context='adhoc')
